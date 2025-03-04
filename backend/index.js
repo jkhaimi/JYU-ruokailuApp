@@ -237,23 +237,31 @@ app.get('/api/todays-menu', async (req, res) => {
                 const components = meal.components.map(c => c.toLowerCase());
                 
                 // Poistetaan ruokia käyttäjän asetusten perusteella
-                if (!preferences.eats_meat && (components.includes("kana") || components.includes("nauta"))) {
+                if (!preferences.eats_meat && meal.components.some(c => c.toLowerCase().includes("broileri"))) {
+                    console.log("Henkilö ei syö lihaa", meal.components);
                     return false;
                 }
-                if (!preferences.eats_pork && components.includes("possu")) {
+                if (!preferences.eats_pork && meal.components.some(c => c.toLowerCase().includes("makkara"))) {
+                    console.log("Henkilö ei syö sikaa", meal.components);
                     return false;
                 }
-                if (!preferences.eats_fish && components.includes("kala")) {
+                if (!preferences.eats_fish && (meal.components.some(c => c.toLowerCase().includes("kala")) || meal.components.some(c => c.toLowerCase().includes("seiti")))){
+                    console.log("Henkilö ei syö kalaa", meal.components);
                     return false;
                 }
-                if (!preferences.eats_soups && meal.name.toLowerCase().includes("keitto")) {
+                if (!preferences.eats_soups && meal.components.some(c => c.toLowerCase().includes("keitto"))) {
+                    console.log("Henkilö ei syö keittoja:", meal.components);
+                    return false;
+                }
+                if (meal.components.length === 0) {
+                    console.log("Tyhjä ruoka")
                     return false;
                 }
                 return true;
             })
         }));
 
-        console.log("Filtteröidyt ruokalistat:", JSON.stringify(filteredMenus, null, 2));
+        console.log("Käyttäjän preferenssit:", preferences);
         res.json(filteredMenus);
     } catch (error) {
         console.error("Error fetching today's menu:", error);
