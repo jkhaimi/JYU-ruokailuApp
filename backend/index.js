@@ -21,6 +21,8 @@ const RESTAURANTS = [
 
 ];
 
+//// Ravintolaan littyvien taulujen päivitys
+
 // Hakee kaikkien ravintoloiden listat
 async function fetchMenusForAllRestaurants() {
     let allMenus = [];
@@ -126,6 +128,8 @@ app.get('/api/fetch-and-insert', async (req, res) => {
     }
 });
 
+//// Käyttäjiin liittyvien taulujen päivitys
+
 
 app.post('/api/register', async (req, res) => {
     const { email, password } = req.body;
@@ -146,7 +150,9 @@ app.post('/api/register', async (req, res) => {
             [userId, true, true, true, true] // Oletusarvot
         );
 
-        res.status(201).send({ message: "User registered successfully" });
+        const token = jwt.sign({ userId: userId }, SECRET_KEY, { expiresIn: '1h' });
+        res.send({ token, userId: userId });        
+
     } catch (error) {
         console.error("Error registering user:", error);
         res.status(500).send({ message: "Error registering user" });
@@ -171,14 +177,71 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).send({ message: "Invalid password" });
         }
 
-const token = jwt.sign({ userId: user.rows[0].id }, SECRET_KEY, { expiresIn: '1h' });
-res.send({ token, userId: user.rows[0].id });
+        const token = jwt.sign({ userId: user.rows[0].id }, SECRET_KEY, { expiresIn: '1h' });
+        res.send({ token, userId: user.rows[0].id });
         
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).send({ message: "Error logging in" });
     }
 });
+
+//// Käyttäjien preferenssien päivitys
+
+app.get('/api/user-preferences', async (req, res) => {
+    try {
+        const userId = req.query.userId;
+        if (!userId) {
+            return res.status(400).json({ message: "Käyttäjä ID puuttuu." });
+        }
+
+        const query = `SELECT * FROM user_preferences WHERE user_id = $1`;
+        const result = await client.query(query, [userId]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Käyttäjän ruokapreferenssejä ei löydy." });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching user preferences:", error);
+        res.status(500).send({ message: "Error fetching user preferences" });
+    }
+});
+
+app.put('/api/user-preferences', async (req, res) => {
+    try {
+        let { userId, eats_meat, eats_pork, eats_fish, eats_soups } = req.body;
+
+        // Muutetaan userId numeroksi
+        userId = Number(userId);
+        if (!userId) {
+            return res.status(400).json({ message: "Käyttäjä ID puuttuu tai ei ole kelvollinen numero." });
+        }
+
+        const query = `
+            UPDATE user_preferences 
+            SET eats_meat = $1, eats_pork = $2, eats_fish = $3, eats_soups = $4 
+            WHERE user_id = $5
+            RETURNING *;
+        `;
+
+        const result = await client.query(query, [eats_meat, eats_pork, eats_fish, eats_soups, userId]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Käyttäjän ruokapreferenssejä ei löytynyt." });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error updating user preferences:", error);
+        res.status(500).send({ message: "Error updating user preferences" });
+    }
+});
+
+
+
+//// Frontendin päivitys
 
 // Hakee dashboardiin tämän päivän ruokalistan ja filteröit ruoat
 app.get('/api/todays-menu', async (req, res) => {
@@ -241,18 +304,26 @@ app.get('/api/todays-menu', async (req, res) => {
                     console.log("Henkilö ei syö lihaa", meal.components);
                     return false;
                 }
-                if (!preferences.eats_pork && meal.components.some(c => c.toLowerCase().includes("makkara"))) {
+
+                if (!preferences.eats_pork && 
+                    (meal.components.some(c => c.toLowerCase().includes("makkara")) || 
+                     meal.components.some(c => c.toLowerCase().includes("kinkku")))) {
                     console.log("Henkilö ei syö sikaa", meal.components);
                     return false;
                 }
-                if (!preferences.eats_fish && (meal.components.some(c => c.toLowerCase().includes("kala")) || meal.components.some(c => c.toLowerCase().includes("seiti")))){
-                    console.log("Henkilö ei syö kalaa", meal.components);
+
+                if (!preferences.eats_fish && 
+                    (meal.components.some(c => c.toLowerCase().includes("kala")) || 
+                     meal.components.some(c => c.toLowerCase().includes("seiti")))) {
+                    console.log("Henkilö ei syö sikaa", meal.components);
                     return false;
                 }
+
                 if (!preferences.eats_soups && meal.components.some(c => c.toLowerCase().includes("keitto"))) {
                     console.log("Henkilö ei syö keittoja:", meal.components);
                     return false;
                 }
+
                 if (meal.components.length === 0) {
                     console.log("Tyhjä ruoka")
                     return false;
