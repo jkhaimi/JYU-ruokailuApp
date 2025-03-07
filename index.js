@@ -11,14 +11,14 @@ app.use(cors());
 app.use(express.json());
 
 const RESTAURANTS = [
-    { name: "Lozzi", costNumber: "1401" },
-    { name: "Piato", costNumber: "1408" },
-    { name: "Maija", costNumber: "1402" },
-    { name: "Tilia", costNumber: "1413" },
-    { name: "Uno", costNumber: "1414" },
-    { name: "Ylistö", costNumber: "1403" },
-    { name: "Rentukka", costNumber: "1416"}
-
+    { name: "Lozzi", costNumber: "1401", apiBaseUrl: "https://www.semma.fi/menuapi/feed/json" },
+    { name: "Piato", costNumber: "1408", apiBaseUrl: "https://www.semma.fi/menuapi/feed/json" },
+    { name: "Maija", costNumber: "1402", apiBaseUrl: "https://www.semma.fi/menuapi/feed/json" },
+    { name: "Tilia", costNumber: "1413", apiBaseUrl: "https://www.semma.fi/menuapi/feed/json" },
+    { name: "Uno", costNumber: "1414", apiBaseUrl: "https://www.semma.fi/menuapi/feed/json" },
+    { name: "Ylistö", costNumber: "1403", apiBaseUrl: "https://www.semma.fi/menuapi/feed/json" },
+    { name: "Rentukka", costNumber: "1416", apiBaseUrl: "https://www.semma.fi/menuapi/feed/json" },
+    { name: "Taide", costNumber: "0301", apiBaseUrl: "https://www.compass-group.fi/menuapi/feed/json" }
 ];
 
 //// Ravintolaan littyvien taulujen päivitys
@@ -29,7 +29,7 @@ async function fetchMenusForAllRestaurants() {
 
     for (const restaurant of RESTAURANTS) {
         try {
-            const response = await axios.get(`https://www.semma.fi/menuapi/feed/json?costNumber=${restaurant.costNumber}&language=fi`);
+            const response = await axios.get(`${restaurant.apiBaseUrl}?costNumber=${restaurant.costNumber}&language=fi`);
             allMenus.push({ restaurantId: restaurant.costNumber, menus: response.data.MenusForDays });
         } catch (error) {
             console.error(`Error fetching menus for ${restaurant.name}:`, error);
@@ -146,8 +146,8 @@ app.post('/api/register', async (req, res) => {
 
         // Lisää oletuspreferenssit käyttäjälle
         await client.query(
-            'INSERT INTO user_preferences (user_id, eats_meat, eats_pork, eats_fish, eats_soups) VALUES ($1, $2, $3, $4, $5)',
-            [userId, true, true, true, true] // Oletusarvot
+            'INSERT INTO user_preferences (user_id, eats_meat, eats_pork, eats_fish, eats_soups, lozzi_ok, maija_ok, piato_ok, rentukka_ok, taide_ok, tilia_ok, uno_ok, ylisto_ok, only_295, only_glutenfree, only_dairyfree, only_lactosefree, eats_vegetarian, eats_vegan) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)',
+            [userId, true, true, true, true]
         );
 
         const token = jwt.sign({ userId: userId }, SECRET_KEY, { expiresIn: '1h' });
@@ -211,22 +211,20 @@ app.get('/api/user-preferences', async (req, res) => {
 
 app.put('/api/user-preferences', async (req, res) => {
     try {
-        let { userId, eats_meat, eats_pork, eats_fish, eats_soups } = req.body;
+        const { userId, eats_meat, eats_pork, eats_fish, eats_soups, lozzi_ok, maija_ok, piato_ok, rentukka_ok, taide_ok, tilia_ok, uno_ok, ylisto_ok, only_295, only_glutenfree, only_dairyfree, only_lactosefree, eats_vegetarian, eats_vegan } = req.body;
 
-        // Muutetaan userId numeroksi
-        userId = Number(userId);
         if (!userId) {
-            return res.status(400).json({ message: "Käyttäjä ID puuttuu tai ei ole kelvollinen numero." });
+            return res.status(400).json({ message: "Käyttäjä ID puuttuu." });
         }
 
         const query = `
             UPDATE user_preferences 
-            SET eats_meat = $1, eats_pork = $2, eats_fish = $3, eats_soups = $4 
-            WHERE user_id = $5
+            SET eats_meat = $1, eats_pork = $2, eats_fish = $3, eats_soups = $4, lozzi_ok = $5, maija_ok = $6, piato_ok = $7, rentukka_ok = $8, taide_ok = $9, tilia_ok = $10, uno_ok = $11, ylisto_ok = $12, only_295 = $13, only_glutenfree = $14, only_dairyfree = $15, only_lactosefree = $16, eats_vegetarian = $17, eats_vegan = $18
+            WHERE user_id = $19
             RETURNING *;
         `;
 
-        const result = await client.query(query, [eats_meat, eats_pork, eats_fish, eats_soups, userId]);
+        const result = await client.query(query, [eats_meat, eats_pork, eats_fish, eats_soups, lozzi_ok, maija_ok, piato_ok, rentukka_ok, taide_ok, tilia_ok, uno_ok, ylisto_ok, only_295, only_glutenfree, only_dairyfree, only_lactosefree, eats_vegetarian, eats_vegan, userId]);
 
         if (result.rows.length === 0) {
             return res.status(404).json({ message: "Käyttäjän ruokapreferenssejä ei löytynyt." });
@@ -238,7 +236,6 @@ app.put('/api/user-preferences', async (req, res) => {
         res.status(500).send({ message: "Error updating user preferences" });
     }
 });
-
 
 
 //// Frontendin päivitys
@@ -293,54 +290,114 @@ app.get('/api/todays-menu', async (req, res) => {
             if (row.component) meal.components.push(row.component);
         });
 
-        // Filtteröidään käyttäjän preferenssien mukaan
-        const filteredMenus = formattedMenus.map(restaurant => ({
-            restaurant: restaurant.restaurant,
-            meals: restaurant.meals.filter(meal => {
-                const components = meal.components.map(c => c.toLowerCase());
-                
-                // Poistetaan ruokia käyttäjän asetusten perusteella
-                if (!preferences.eats_meat && meal.components.some(c => c.toLowerCase().includes("broileri"))) {
-                    console.log("Henkilö ei syö lihaa", meal.components);
-                    return false;
-                }
+// Filtteröidään käyttäjän preferenssien mukaan
+const filteredMenus = formattedMenus.filter(restaurant => {
+    const blockedRestaurants = [
+        { key: "lozzi_ok", name: "lozzi" },
+        { key: "maija_ok", name: "maija" },
+        { key: "piato_ok", name: "piato" },
+        { key: "rentukka_ok", name: "rentukka" },
+        { key: "taide_ok", name: "taide" },
+        { key: "tilia_ok", name: "tilia" },
+        { key: "uno_ok", name: "uno" },
+        { key: "ylisto_ok", name: "ylistö" }
+    ];
 
-                if (!preferences.eats_pork && 
-                    (meal.components.some(c => c.toLowerCase().includes("makkara")) || 
-                     meal.components.some(c => c.toLowerCase().includes("kinkku")))) {
-                    console.log("Henkilö ei syö sikaa", meal.components);
-                    return false;
-                }
+    if (blockedRestaurants.some(r => !preferences[r.key] && restaurant.restaurant.toLowerCase() === r.name)) {
+        console.log(`Henkilö ei syö ${restaurant.restaurant}`);
+        return false;
+    }
 
-                if (!preferences.eats_fish && 
-                    (meal.components.some(c => c.toLowerCase().includes("kala")) || 
-                     meal.components.some(c => c.toLowerCase().includes("seiti")))) {
-                    console.log("Henkilö ei syö sikaa", meal.components);
-                    return false;
-                }
+    return true;
+})
+    .map(restaurant => ({
+        restaurant: restaurant.restaurant,
+        meals: restaurant.meals.filter(meal => {
 
-                if (!preferences.eats_soups && meal.components.some(c => c.toLowerCase().includes("keitto"))) {
-                    console.log("Henkilö ei syö keittoja:", meal.components);
-                    return false;
-                }
+            // Tarkistettavat allergeenit ja niiden vastaavat preferenssit
+            const allergenFilters = [
+                { key: "only_glutenfree", allergen: "G" },
+                { key: "only_dairyfree", allergen: "M" },
+                { key: "only_lactosefree", allergen: "L" }
+            ];
 
-                if (meal.components.length === 0) {
-                    console.log("Tyhjä ruoka")
-                    return false;
-                }
-                return true;
-            })
-        }));
+            const filterByAllergens = (meal, filters) => {
+                return filters.every(filter => {
+                    if (!preferences[filter.key]) return true;
 
-        console.log("Käyttäjän preferenssit:", preferences);
-        res.json(filteredMenus);
+                    return meal.components.every(component => {
+                        const tags = component.match(/\((.*?)\)/);
+                        if (!tags) return false; 
+
+                        const allergens = tags[1].split(",").map(tag => tag.trim());
+                        return allergens.includes(filter.allergen);
+                    });
+                });
+            };
+
+            if (!filterByAllergens(meal, allergenFilters)) {
+                console.log("Ateria ei täytä allergeenivaatimuksia, poistetaan:", meal.components);
+                return false;
+            }
+
+            const dietFilters = [
+                { key: "eats_meat", blockedWords: ["broileri", "nauta", "kana", "liha", "chicken", "meetvursti"] },
+                { key: "eats_pork", blockedWords: ["makkara", "kinkku", "sianliha", "pekoni", "porsas"] },
+                { key: "eats_fish", blockedWords: ["kala", "seiti", "lohi", "lohta", "silakka", "kampela"] },
+                { key: "eats_soups", blockedWords: ["keitto"] }
+            ];
+
+            const filterByDiet = (meal, filters) => {
+                return filters.every(filter => {
+                    if (preferences[filter.key]) return true;
+    
+                    return !meal.components.some(component => 
+                        filter.blockedWords.some(word => component.toLowerCase().includes(word))
+                    );
+                });
+            };
+            
+            if (!filterByDiet(meal, dietFilters)) {
+                console.log("Ateria ei täytä ruokavaliorajoituksia, poistetaan:", meal.components);
+                return false;
+            }
+
+            if (!preferences.eats_vegetarian && 
+                meal.name.toLowerCase().includes("kasvis") && 
+                !meal.name.toLowerCase().includes("vegaani")) { 
+                console.log("Henkilö ei syö kasvisruokia, poistetaan:", meal.name);
+                return false;
+            }
+
+            if (!preferences.eats_vegan && meal.name.toLowerCase().includes("vegaani")) {
+                console.log("Henkiö ei syö vegaaniruokia: " + meal.name);
+                return false;
+            }
+            
+
+
+            if (preferences.only_295 && !meal.price.split("/").some(c => c.toLowerCase().includes("2,95"))) {
+                console.log("Henkilö syö vain 2,95 ruokia", meal.price);
+                return false;
+            }
+
+            if (meal.components.length === 0) {
+                console.log("Tyhjä ruoka")
+                return false;
+            }
+            return true;
+        })
+    }));
+
+// Poistetaan ravintolat, joilla ei ole yhtään ateriaa
+const nonEmptyMenus = filteredMenus.filter(restaurant => restaurant.meals.length > 0);
+res.json(nonEmptyMenus);
+
     } catch (error) {
         console.error("Error fetching today's menu:", error);
         res.status(500).send({ message: "Error fetching today's menu" });
     }
 });
-
-
 
 app.listen(5001, () => {
     console.log('Server is running on port 5001');
