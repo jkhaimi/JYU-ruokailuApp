@@ -28,7 +28,7 @@ async function fetchMenusForAllRestaurants() {
     let allMenus = [];
 
     for (const restaurant of RESTAURANTS) {
-        try {
+        try {x
             const response = await axios.get(`${restaurant.apiBaseUrl}?costNumber=${restaurant.costNumber}&language=fi`);
             allMenus.push({ restaurantId: restaurant.costNumber, menus: response.data.MenusForDays });
         } catch (error) {
@@ -237,6 +237,44 @@ app.put('/api/user-preferences', async (req, res) => {
     }
 });
 
+/// Arvosteluiden päivitys
+
+// Lisää arvostelun tietylle ruoalle
+app.post('/api/reviews', async (req, res) => {
+    const { meal_id, rating, comment, userId } = req.body;
+    if (!userId || !meal_id) {
+        return res.status(400).json({ message: "Käyttäjä ID tai ateria ID puuttuu." });
+    }
+    try {
+        const mealResult = await client.query('SELECT * FROM meals WHERE id = $1', [meal_id]);
+        if (mealResult.rows.length === 0) {
+            return res.status(404).json({ message: "Ateria ei löytynyt." });
+        }
+        
+        const result = await client.query(
+            'INSERT INTO meal_reviews (user_id, meal_id, rating, comment) VALUES ($1, $2, $3, $4) RETURNING *',
+            [userId, meal_id, rating, comment]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error("Error adding review:", err.message);
+        res.status(500).send({ message: "Virhe arvostelun lisäämisessä." });
+    }
+});
+
+
+// Hakee kaikki arvostelut tietylle ruoalle
+app.get('/api/reviews/:meal_id', async (req, res) => {
+    const { meal_id } = req.params;
+    try {
+        const result = await client.query('SELECT * FROM meal_reviews WHERE meal_id = $1', [meal_id]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error fetching reviews:", err.message);
+        res.status(500).send({ message: "Error fetching reviews" });
+    }
+});
+
 
 //// Frontendin päivitys
 
@@ -398,6 +436,8 @@ res.json(nonEmptyMenus);
         res.status(500).send({ message: "Error fetching today's menu" });
     }
 });
+
+
 
 app.listen(5001, () => {
     console.log('Server is running on port 5001');
