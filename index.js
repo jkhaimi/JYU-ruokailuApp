@@ -132,23 +132,24 @@ app.get('/api/fetch-and-insert', async (req, res) => {
 
 
 app.post('/api/register', async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Käyttäjän lisääminen ja sen ID:n saaminen
         const userResult = await client.query(
-            'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id',
-            [email, hashedPassword]
+            'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id',
+            [username, hashedPassword]
         );
         const userId = userResult.rows[0].id;
 
         // Lisää oletuspreferenssit käyttäjälle
         await client.query(
             'INSERT INTO user_preferences (user_id, eats_meat, eats_pork, eats_fish, eats_soups, lozzi_ok, maija_ok, piato_ok, rentukka_ok, taide_ok, tilia_ok, uno_ok, ylisto_ok, only_295, only_glutenfree, only_dairyfree, only_lactosefree, eats_vegetarian, eats_vegan) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)',
-            [userId, true, true, true, true]
+            [userId, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true] // Täydet 19 arvoa
         );
+        
 
         const token = jwt.sign({ userId: userId }, SECRET_KEY, { expiresIn: '1h' });
         res.send({ token, userId: userId });        
@@ -162,11 +163,11 @@ app.post('/api/register', async (req, res) => {
 
 // Kirjaa käyttäjän sisään
 app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     try {
-        const user = await client.query('SELECT * FROM users WHERE email = $1', [email]);
+        const user = await client.query('SELECT * FROM users WHERE username = $1', [username]);
         if (user.rows.length === 0) {
-            return res.status(400).send({ message: "Invalid email" });
+            return res.status(400).send({ message: "Invalid username" });
         }
 
         console.log("User found:", user.rows[0]);
@@ -414,10 +415,10 @@ const filteredMenus = formattedMenus.filter(restaurant => {
             
 
 
-            if (preferences.only_295 && !meal.price.split("/").some(c => c.toLowerCase().includes("2,95"))) {
-                console.log("Henkilö syö vain 2,95 ruokia", meal.price);
-                return false;
-            }
+            // if (preferences.only_295 && !meal.price.split("/").some(c => c.toLowerCase().includes("2,95"))) {
+            //     console.log("Henkilö syö vain 2,95 ruokia", meal.price);
+            //     return false;
+            // }
 
             if (meal.components.length === 0) {
                 console.log("Tyhjä ruoka")
