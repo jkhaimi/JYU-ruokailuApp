@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Notification from "./Notification";
 import './Preferences.css';
 
 export default function Preferences() {
@@ -7,10 +8,13 @@ export default function Preferences() {
   const userId = localStorage.getItem("userId");
   const [username, setUsername] = useState(localStorage.getItem("username"));
   const [preferences, setPreferences] = useState({});
+  const [notification, setNotification] = useState({ message: "", type: "" });
 
   useEffect(() => {
     const fetchPreferences = async () => {
-      if (!userId) return;
+      if (!userId) {
+        navigate("/");
+    }
       try {
         const response = await fetch(
           `http://localhost:5001/api/user-preferences?userId=${userId}`
@@ -56,7 +60,7 @@ export default function Preferences() {
 
   const handleSubmit = async () => {
     if (!userId) {
-      alert("Virhe: käyttäjä ID puuttuu.");
+      setNotification({ message: "Virhe: käyttäjä ID puuttuu. Kirjaudu sisään uudelleen", type: "error" });
       return;
     }
     
@@ -68,14 +72,13 @@ export default function Preferences() {
       });
   
       if (response.ok) {
-        console.log("Preferenssit tallennettu!");
-        navigate("/dashboard");
+        navigate("/dashboard", { state: { message: "Preferenssit tallennettu!", type: "success" } });
       } else {
         const errorData = await response.json();
-        alert("Virhe tallennettaessa preferenssejä: " + errorData.message);
+        setNotification({ message: "Virhe tallennettaessa: " + errorData.message, type: "error" });
       }
     } catch (error) {
-      console.error("Virhe tallennettaessa preferenssejä:", error);
+      setNotification({ message: "Virhe tallennettaessa preferenssejä", type: "error" });
     }
   };
 
@@ -102,6 +105,11 @@ export default function Preferences() {
   
   return (
     <div className="preferences-container">
+       <Notification 
+        message={notification.message} 
+        type={notification.type} 
+        onClose={() => setNotification({ message: "", type: "" })}
+      />
       <div className="preferences-box">
       <h2 className="preference-title">Hei, {username}</h2>
       <h3 className="preference-title2">mitä ja missä syödään?</h3>

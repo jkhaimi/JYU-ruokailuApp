@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Dashboard.css"; 
-import StarRating from "./StarRating"; // Importoi komponentti
+import StarRating from "./StarRating";
+import Dropdown from "./Dropdown";
+import Notification from "./Notification";
 
 export default function Dashboard() {
     const [menu, setMenu] = useState([]);
     const [reviews, setReviews] = useState({});
     const [userId] = useState(localStorage.getItem("userId"));
     const [username, setUsername] = useState(localStorage.getItem("username"));
+    const [notification, setNotification] = useState({ message: "", type: "" });
+    const location = useLocation();
     const navigate = useNavigate();
     
     useEffect(() => {
-        if (!userId) return;
+        if (!userId) {
+            navigate("/");
+        }
     
         async function fetchMenu() {
             try {
@@ -57,12 +63,29 @@ export default function Dashboard() {
             fetchAllReviews();
         }
     }, [menu]);
+
+    useEffect(() => {
+        if (location.state?.message) {
+          setNotification({ message: location.state.message, type: location.state.type });
+    
+          // Tyhjennä navigoinnin state, jotta viesti ei jää pysyvästi
+          window.history.replaceState({}, document.title);
+        }
+      }, [location.state]);
     
     return (
         <div className="dashboard-container">
+            <Notification 
+                message={notification.message} 
+                type={notification.type} 
+                onClose={() => setNotification({ message: "", type: "" })} 
+            />
             <div className="dashboard-box">
-                <h2 className="dashboard-title">Hei, {username}</h2>
-                <h3 className="dashboard-title2">mitä tänään syötäisiin?</h3>
+                <div>
+                    <h2 className="dashboard-title">Hei, {username}</h2>
+                    <h3 className="dashboard-title2">mitä tänään syötäisiin?</h3>
+                    <Dropdown />
+                </div>                                                                                        
                 <div className="app-links">
                 <a href="/dashboard" className="active">Ruokalista</a>                
                 <a href="/preferences">Preferenssit</a>
@@ -94,7 +117,7 @@ export default function Dashboard() {
                                                     <p className="meal-price">{meal.price}</p>
                                                     <div className="meal-reviews">
                                                         <StarRating rating={avgRating} /> <span className="review-amount">({mealReviews.length})</span>
-                                                    </div>                                                
+                                                    </div>    
                                                 </div>
                                             );
                                         })}

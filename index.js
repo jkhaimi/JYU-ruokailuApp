@@ -118,9 +118,9 @@ async function insertMenusToDb(allMenus) {
 // Lisää tiedot tauluihin
 app.get('/api/fetch-and-insert', async (req, res) => {
     try {
-        await insertRestaurantsToDb(); // Lisää ravintolat tietokantaan
-        const allMenus = await fetchMenusForAllRestaurants(); // Hakee kaikki ruokalistat
-        await insertMenusToDb(allMenus); // Tallentaa ne tietokantaan
+        await insertRestaurantsToDb(); 
+        const allMenus = await fetchMenusForAllRestaurants(); 
+        await insertMenusToDb(allMenus); 
         res.send('All menus inserted successfully!');
     } catch (error) {
         console.error("Error in fetch-and-insert:", error);
@@ -129,7 +129,6 @@ app.get('/api/fetch-and-insert', async (req, res) => {
 });
 
 //// Käyttäjiin liittyvien taulujen päivitys
-
 
 app.post('/api/register', async (req, res) => {
     const { username, password } = req.body;
@@ -184,6 +183,10 @@ app.post('/api/login', async (req, res) => {
         console.error("Login error:", error);
         res.status(500).send({ message: "Error logging in" });
     }
+});
+
+app.post('/api/logout', (req, res) => {
+    res.status(200).send({ message: "Logged out successfully" });
 });
 
 //// Käyttäjien preferenssien päivitys

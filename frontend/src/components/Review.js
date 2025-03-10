@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Notification from "./Notification";
 import './Review.css';
 
 export default function Review() {
@@ -11,8 +12,14 @@ export default function Review() {
     const [userId] = useState(localStorage.getItem("userId"));
     const [username, setUsername] = useState(localStorage.getItem("username"));
     const navigate = useNavigate();
+    const [notification, setNotification] = useState({ message: "", type: "" });
 
     useEffect(() => {
+
+        if (!userId) {
+            navigate("/");
+        }
+
         async function fetchMenu() {
             try {
                 const response = await fetch(`http://localhost:5001/api/todays-menu?userId=${userId}`);
@@ -20,10 +27,11 @@ export default function Review() {
                 if (response.ok) {
                     setMenu(Array.isArray(data) ? data : []);
                 } else {
-                    console.error("Virhe haettaessa ruokalistaa:", data.message);
+                    navigate("/");
+                    setNotification({ message: "Virhe haettaessa ruokalistaa: ", type: "error" });
                 }
             } catch (error) {
-                console.error("Virhe haettaessa ruokalistaa:", error);
+            setNotification({ message: "Virhe lähettäessä arvostelua: " + error, type: "error" });
             }
         }
         fetchMenu();
@@ -31,7 +39,7 @@ export default function Review() {
 
     async function submitReview() {
         if (!selectedMeal) {
-            console.error("Valitse ateria ennen arvostelua.");
+            setNotification({ message: "Valitse ateria ennen arvostelua: ", type: "error" });
             return;
         }
         try {
@@ -46,21 +54,26 @@ export default function Review() {
                 }),
             });
             if (response.ok) {
-                navigate("/dashboard");
+                navigate("/dashboard", { state: { message: "Arvostelu lisätty!", type: "success" } });
             } else {
-                console.error("Virhe lähetettäessä arvostelua");
+                setNotification({ message: "Virhe lähettäessä arvostelua: ", type: "error" });
             }
         } catch (error) {
-            console.error("Virhe lähetettäessä arvostelua:", error);
+            setNotification({ message: "Virhe lähettäessä arvostelua: " + error, type: "error" });
         }
     }
     
 
     return (
         <div className="review-container">
+        <Notification 
+        message={notification.message} 
+        type={notification.type} 
+        onClose={() => setNotification({ message: "", type: "" })}
+        />
             <div className="review-box">
-            <h2 className="preference-title">Hei, {username}</h2>
-            <h3 className="preference-title2">miltä maistui tänään?</h3>
+            <h2 className="dashboard-title">Hei, {username}</h2>
+            <h3 className="dashboard-title2">miltä maistui tänään?</h3>
                 <div className="app-links">
                 <a href="/dashboard">Ruokalista</a>                
                 <a href="/preferences">Preferenssit</a>
