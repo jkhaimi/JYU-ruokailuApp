@@ -1,0 +1,118 @@
+.preferences-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .preferences-box {
+    padding: 20px;
+  }
+
+  .preference-title, .preference-title2 {
+    margin-left: -0.25em;
+  }
+
+  .preference-title {
+    font-size: x-large;
+    font-weight: bold;
+    color: #4caf50;;
+    text-align: left;
+    margin-top: 0.5em;
+}
+
+.preference-title2 {
+    font-size: large;
+    font-weight: bold;
+    text-align: left;
+    margin-top: -0.5em;
+}
+  
+  .preference-box {
+    border: 2px solid #4caf50;
+    border-radius: 10px;
+    padding: 0.5em;
+    margin-bottom: 1em;
+  }
+  
+  .preferences-category {
+    font-size: large;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 1em;
+    padding-bottom: 4px;
+    color: #4caf50;
+  }
+
+  .preference-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 0.5em;
+    background: #262626;
+    border-radius: 25px;
+    padding: 1em;
+  }
+  
+  .toggle-switch {
+    position: relative;
+    width: 40px;
+    height: 20px;
+  }
+  
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(197, 46, 46);
+    border-radius: 20px;
+    transition: 0.3s;
+  }
+  
+  .slider:before {
+    content: "";
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+  }
+  
+  .toggle-switch input:checked + .slider {
+    background-color: #4caf50;
+  }
+  
+  .toggle-switch input:checked + .slider:before {
+    transform: translateX(20px);
+  }
+  
+.save-button {
+    width: 100%;
+    padding: 1em;
+    background: #4caf50;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    margin-top: 1em;
+}
+
+.save-button:hover {
+    background: #388e3c;
+}
+  

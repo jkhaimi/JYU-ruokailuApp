@@ -7,7 +7,6 @@ import Review from './components/Review';
 
 function App() {
   return (
-    <div className="app">
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
@@ -17,7 +16,6 @@ function App() {
         <Route path="/review" element={<Review />} />
       </Routes>
     </Router>
-    </div>
   );
 }
 

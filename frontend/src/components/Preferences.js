@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import './Preferences.css';
 
 export default function Preferences() {
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
+  const [username, setUsername] = useState(localStorage.getItem("username"));
   const [preferences, setPreferences] = useState({});
 
   useEffect(() => {
@@ -76,26 +78,98 @@ export default function Preferences() {
       console.error("Virhe tallennettaessa preferenssejä:", error);
     }
   };
-  
 
+  const preferenceLabels = {
+    eats_meat: "Syön lihaa",
+    eats_pork: "Syön possua",
+    eats_fish: "Syön kalaa",
+    eats_soups: "Syön keittoja",
+    eats_vegetarian: "Syön kasvisruokaa",
+    eats_vegan: "Syön vegaanista ruokaa",
+    only_glutenfree: "Pitää olla gluteeniton",
+    only_dairyfree: "Pitää olla maidoton",
+    only_lactosefree: "Pitää olla laktoositon",
+    only_295: "Vain 2,95€ ateriat",
+    lozzi_ok: "Näytä Lozzi",
+    maija_ok: "Näytä Maija",
+    piato_ok: "Näytä Piato",
+    rentukka_ok: "Näytä Rentukka",
+    taide_ok: "Näytä Taide",
+    tilia_ok: "Näytä Tilia",
+    uno_ok: "Näytä Uno",
+    ylisto_ok: "Näytä Ylistö",
+  };
+  
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-xl font-semibold mb-4">Ruokapreferenssit</h2>
-        <div className="flex flex-col gap-2">
-          {Object.keys(preferences).map((key) => (
-            <label key={key} className="flex justify-between items-center p-2 border rounded">
-              <span>{key.replace("eats_", "would you eat ") + "?"}</span>
-              <input
-                type="checkbox"
-                checked={preferences[key]}
-                onChange={() => handleToggle(key)}
-              />
-            </label>
-          ))}
+    <div className="preferences-container">
+      <div className="preferences-box">
+      <h2 className="preference-title">Hei, {username}</h2>
+      <h3 className="preference-title2">mitä ja missä syödään?</h3>
+        <div className="app-links">
+        <a href="/dashboard">Ruokalista</a>                
+        <a href="/preferences" className="active">Preferenssit</a>
+        <a href="/review">Arvostele</a>
         </div>
-        <button onClick={handleSubmit} className="bg-blue-500 text-white p-2 rounded mt-4 w-full">
-          OK
+
+        {/* Hinta */}
+        <div className="preference-box">
+        <h3 className="preferences-category">Hinta</h3>
+        {["only_295"].map((key) => (
+          <div key={key} className="preference-item">
+            <span>{preferenceLabels[key] || key}</span>
+            <label className="toggle-switch">
+              <input type="checkbox" checked={preferences[key]} onChange={() => handleToggle(key)} />
+              <span className="slider"></span>
+            </label>
+          </div>
+        ))}
+        </div>
+
+        {/* Ruokavaliot */}
+        <div className="preference-box">
+        <h3 className="preferences-category">Ruokavalio</h3>
+        {["eats_meat", "eats_pork", "eats_fish", "eats_soups", "eats_vegetarian", "eats_vegan"].map((key) => (
+          <div key={key} className="preference-item">
+            <span>{preferenceLabels[key] || key}</span>
+            <label className="toggle-switch">
+              <input type="checkbox" checked={preferences[key]} onChange={() => handleToggle(key)} />
+              <span className="slider"></span>
+            </label>
+          </div>
+        ))}
+        </div>
+
+
+        {/* Allergiat & erityisruokavaliot */}
+        <div className="preference-box">
+        <h3 className="preferences-category">Allergiat & erityisruokavaliot</h3>
+        {["only_glutenfree", "only_dairyfree", "only_lactosefree"].map((key) => (
+          <div key={key} className="preference-item">
+            <span>{preferenceLabels[key] || key}</span>
+            <label className="toggle-switch">
+              <input type="checkbox" checked={preferences[key]} onChange={() => handleToggle(key)} />
+              <span className="slider"></span>
+            </label>
+          </div>
+        ))}
+        </div>
+
+        {/* Ravintolat */}
+        <div className="preference-box">
+        <h3 className="preferences-category">Ravintolat</h3>
+        {["lozzi_ok", "maija_ok", "piato_ok", "rentukka_ok", "taide_ok", "tilia_ok", "uno_ok", "ylisto_ok"].map((key) => (
+          <div key={key} className="preference-item">
+            <span>{preferenceLabels[key] || key}</span>
+            <label className="toggle-switch">
+              <input type="checkbox" checked={preferences[key]} onChange={() => handleToggle(key)} />
+              <span className="slider"></span>
+            </label>
+          </div>
+        ))}
+        </div>
+
+        <button onClick={handleSubmit} className="save-button">
+          Tallenna
         </button>
       </div>
     </div>

@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./Dashboard.css"; 
+import StarRating from "./StarRating"; // Importoi komponentti
 
 export default function Dashboard() {
     const [menu, setMenu] = useState([]);
     const [reviews, setReviews] = useState({});
     const [userId] = useState(localStorage.getItem("userId"));
+    const [username, setUsername] = useState(localStorage.getItem("username"));
     const navigate = useNavigate();
     
     useEffect(() => {
@@ -16,6 +19,7 @@ export default function Dashboard() {
                 const data = await response.json();
                 if (response.ok) {
                     console.log(userId)
+                    console.log(username)
                     setMenu(Array.isArray(data) ? data : []);
                 } else {
                     console.error("Virhe haettaessa ruokalistaa:", data.message);
@@ -55,43 +59,52 @@ export default function Dashboard() {
     }, [menu]);
     
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                <h2 className="text-xl font-semibold mb-4">Tämän päivän ruokalista</h2>
-                <button onClick={() => navigate("/preferences")}>Preferences</button>
-                <button onClick={() => navigate("/review")}>Review</button>
+        <div className="dashboard-container">
+            <div className="dashboard-box">
+                <h2 className="dashboard-title">Hei, {username}</h2>
+                <h3 className="dashboard-title2">mitä tänään syötäisiin?</h3>
+                <div className="app-links">
+                <a href="/dashboard" className="active">Ruokalista</a>                
+                <a href="/preferences">Preferenssit</a>
+                <a href="/review">Arvostele</a>
+                </div>
+
                 {menu.length > 0 ? (
-                    <ul>
+                    <div>
                         {menu.map((restaurant, index) => (
-                            <li key={index} className="mb-4">
-                                <h3 className="font-bold">{restaurant.restaurant}</h3>
+                            <div key={index} className="restaurant-box">
+                                <h3 className="restaurant-title">{restaurant.restaurant}</h3>
                                 {restaurant.meals.length > 0 ? (
-                                    <ul className="ml-4">
+                                    <div>
                                         {restaurant.meals.map((meal, idx) => {
                                             const mealReviews = reviews[meal.id] || [];
-                                            const avgRating = mealReviews.length > 0 
-                                                ? (mealReviews.reduce((sum, r) => sum + r.rating, 0) / mealReviews.length).toFixed(1) 
-                                                : "Ei arvosteluja";
+                                            const avgRating =
+                                                mealReviews.length > 0
+                                                    ? (mealReviews.reduce((sum, r) => sum + r.rating, 0) / mealReviews.length).toFixed(0)
+                                                    : "Ei arvosteluja";
 
                                             return (
-                                                <li key={idx} className="mb-2 p-2 border rounded">
-                                                    <strong>{meal.name}</strong> - {meal.price}
-                                                    <ul className="ml-4 text-sm">
+                                                <div key={idx} className="meal-box">
+                                                    {/* <p className="meal-name">{meal.name}</p> */}
+                                                    <ul className="meal-components">
                                                         {meal.components.map((component, cidx) => (
                                                             <li key={cidx}>{component}</li>
                                                         ))}
                                                     </ul>
-                                                    <p className="text-sm text-gray-700">Keskiarvo: {avgRating} ⭐ ({mealReviews.length} arvostelua)</p>
-                                                </li>
+                                                    <p className="meal-price">{meal.price}</p>
+                                                    <div className="meal-reviews">
+                                                        <StarRating rating={avgRating} /> <span className="review-amount">({mealReviews.length})</span>
+                                                    </div>                                                
+                                                </div>
                                             );
                                         })}
-                                    </ul>
+                                    </div>
                                 ) : (
-                                    <p className="text-sm text-gray-500">Ei aterioita tänään.</p>
+                                    <p>Ei sopivia aterioita...</p>
                                 )}
-                            </li>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 ) : (
                     <p>Ladataan ruokalistaa...</p>
                 )}
@@ -99,5 +112,3 @@ export default function Dashboard() {
         </div>
     );
 }
-
-// joafjosidf

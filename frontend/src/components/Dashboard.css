@@ -1,0 +1,98 @@
+/* Yleinen tyylitys */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-box {
+    padding: 20px;
+    text-align: center;
+}
+
+.dashboard-title {
+    font-size: x-large;
+    font-weight: bold;
+    color: #4caf50;
+    text-align: left;
+    margin-top: 0.5em;
+}
+
+.dashboard-title2 {
+    font-size: large;
+    font-weight: bold;
+    text-align: left;
+    margin-top: -0.5em;
+}
+
+/* Ravintolan laatikko */
+.restaurant-box {
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 20px;
+    background: transparent;
+    border: 2px solid #4caf50;
+}
+
+.restaurant-title {
+    font-size: large;
+    font-weight: bold;
+    color: #2dc634;
+}
+
+/* Aterian laatikko */
+.meal-box {
+    background: #ffffff;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 10px;
+    text-align: left;
+    background: #444;
+    background: #262626;
+    /* background: #1b1b1b; */
+}
+
+/* .meal-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #388e3c;
+} */
+
+.meal-price {
+    font-size: 14px;
+    color: whitesmoke;
+    text-align: center;
+}
+
+.meal-components {
+    font-size: 14px;
+    color: whitesmoke;
+    margin-top: 0.5em;
+    font-weight: bold;
+    margin-left: -1em;
+}
+
+.meal-reviews {
+    display: flex;
+    flex-direction: row;
+    font-size: 13px;
+    color: #777;
+    margin-left: 28%;
+}
+
+.star-rating {
+    display: flex;
+    align-items: center;
+}
+
+.star-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 2px;
+}
+
+.review-amount {
+    margin-top: 0.2em;
+    margin-left: 0.3em;
+}

@@ -28,7 +28,7 @@ async function fetchMenusForAllRestaurants() {
     let allMenus = [];
 
     for (const restaurant of RESTAURANTS) {
-        try {x
+        try {
             const response = await axios.get(`${restaurant.apiBaseUrl}?costNumber=${restaurant.costNumber}&language=fi`);
             allMenus.push({ restaurantId: restaurant.costNumber, menus: response.data.MenusForDays });
         } catch (error) {
@@ -137,29 +137,27 @@ app.post('/api/register', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Käyttäjän lisääminen ja sen ID:n saaminen
         const userResult = await client.query(
-            'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id',
+            'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id, username',
             [username, hashedPassword]
         );
         const userId = userResult.rows[0].id;
+        const registeredUsername = userResult.rows[0].username;
 
-        // Lisää oletuspreferenssit käyttäjälle
         await client.query(
             'INSERT INTO user_preferences (user_id, eats_meat, eats_pork, eats_fish, eats_soups, lozzi_ok, maija_ok, piato_ok, rentukka_ok, taide_ok, tilia_ok, uno_ok, ylisto_ok, only_295, only_glutenfree, only_dairyfree, only_lactosefree, eats_vegetarian, eats_vegan) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)',
-            [userId, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true] // Täydet 19 arvoa
+            [userId, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true] 
         );
-        
 
         const token = jwt.sign({ userId: userId }, SECRET_KEY, { expiresIn: '1h' });
-        res.send({ token, userId: userId });        
+
+        res.send({ token, userId, username: registeredUsername });
 
     } catch (error) {
         console.error("Error registering user:", error);
         res.status(500).send({ message: "Error registering user" });
     }
 });
-
 
 // Kirjaa käyttäjän sisään
 app.post('/api/login', async (req, res) => {
@@ -179,8 +177,9 @@ app.post('/api/login', async (req, res) => {
         }
 
         const token = jwt.sign({ userId: user.rows[0].id }, SECRET_KEY, { expiresIn: '1h' });
-        res.send({ token, userId: user.rows[0].id });
-        
+
+        res.send({ token, userId: user.rows[0].id, username: user.rows[0].username });
+
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).send({ message: "Error logging in" });
@@ -380,8 +379,8 @@ const filteredMenus = formattedMenus.filter(restaurant => {
             }
 
             const dietFilters = [
-                { key: "eats_meat", blockedWords: ["broileri", "nauta", "kana", "liha", "chicken", "meetvursti"] },
-                { key: "eats_pork", blockedWords: ["makkara", "kinkku", "sianliha", "pekoni", "porsas"] },
+                { key: "eats_meat", blockedWords: ["broileri", "nauta", "kana", "liha", "chicken", "meetvursti", "naudanlihaa", "makkara", "kinkku", "sianliha", "pekoni", "porsas", "kebab"] },
+                { key: "eats_pork", blockedWords: ["makkara", "kinkku", "sianliha", "pekoni", "porsas", "wieninleike"] },
                 { key: "eats_fish", blockedWords: ["kala", "seiti", "lohi", "lohta", "silakka", "kampela"] },
                 { key: "eats_soups", blockedWords: ["keitto"] }
             ];

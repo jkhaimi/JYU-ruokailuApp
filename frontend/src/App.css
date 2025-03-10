@@ -1,3 +1,48 @@
 .app {
-  
+    display: none;
+}
+
+.mobile-only {
+    text-align: center;
+}
+
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Napit */
+
+.app-links {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+    margin-bottom: 1em;
+}
+
+.app-links a {
+    text-decoration: none;
+    font-weight: bold;
+    padding-bottom: 5px;
+    color: #4caf50;;
+    transition: color 0.3s ease-in-out;
+    font-size: medium;
+}
+
+.app-links a.active {
+    border-bottom: 4px solid #4caf50;;
+}
+
+@media (max-width: 750px) {
+
+    .mobile-only {
+        display: none;
+    }
+
+    .app {
+        display: block;
+    }
+
+
 }

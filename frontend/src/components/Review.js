@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import './Review.css';
 
 export default function Review() {
     const [menu, setMenu] = useState([]);
@@ -8,6 +9,7 @@ export default function Review() {
     const [rating, setRating] = useState(1);
     const [comment, setComment] = useState("");
     const [userId] = useState(localStorage.getItem("userId"));
+    const [username, setUsername] = useState(localStorage.getItem("username"));
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -55,17 +57,24 @@ export default function Review() {
     
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                <h2 className="text-xl font-semibold mb-4">Lisää arvostelu</h2>
+        <div className="review-container">
+            <div className="review-box">
+            <h2 className="preference-title">Hei, {username}</h2>
+            <h3 className="preference-title2">miltä maistui tänään?</h3>
+                <div className="app-links">
+                <a href="/dashboard">Ruokalista</a>                
+                <a href="/preferences">Preferenssit</a>
+                <a href="/review" className="active">Arvostele</a>
+                </div>
+                <div className="review-inputbox">
                 {!selectedRestaurant ? (
                     <>
-                        <h3 className="font-bold mb-2">Valitse ravintola:</h3>
+                        <h3 className="review-title">Missä ravintolassa söit tänään?</h3>
                         {menu.map((restaurant, idx) => (
                             <button
                                 key={idx}
                                 onClick={() => setSelectedRestaurant(restaurant)}
-                                className="block w-full p-2 mb-2 text-left border rounded"
+                                className="restaurant-button"
                             >
                                 {restaurant.restaurant}
                             </button>
@@ -73,43 +82,61 @@ export default function Review() {
                     </>
                 ) : !selectedMeal ? (
                     <>
-                        <h3 className="font-bold mb-2">Valitse ateria:</h3>
+                        <h3 className="review-title">Mitä söit ravintolassa {selectedRestaurant.restaurant}?</h3>
                         {selectedRestaurant.meals.map((meal, idx) => (
                             <button
                                 key={idx}
                                 onClick={() => setSelectedMeal(meal)}
-                                className="block w-full p-2 mb-2 text-left border rounded"
+                                className="meal-button"
                             >
-                                {meal.components.join(", ")}
+                            <ul className="review-components">
+                                {meal.components.map((component, cidx) => (
+                                    <li key={cidx}>{component}</li>
+                                ))}
+                            </ul>
                             </button>
                         ))}
                     </>
                 ) : (
                     <>
-                        <h3 className="font-bold mb-2">Arvostele {selectedMeal.name}</h3>
-                        <label className="block mb-2">Tähdet (1-5):
-                            <input
-                                type="number"
-                                min="1"
-                                max="5"
-                                value={rating}
-                                onChange={(e) => setRating(Number(e.target.value))}
-                                className="ml-2 border rounded p-1"
-                            />
-                        </label>
-                        <label className="block mb-2">Kommentti:
-                            <textarea
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                className="w-full border rounded p-1"
-                            />
-                        </label>
-                        <button onClick={submitReview} className="bg-blue-500 text-white p-2 rounded">
+                        <h3 className="review-stars-title">
+                            Miten arvostelisit aterian?<br />
+                            {selectedMeal.components.map((component, index) => (
+                                <span key={index}>
+                                   <li> {component} </li>
+                                    <br />
+                                </span>
+                            ))}
+                        </h3>
+                        {/* Tähtiarvostelu */}
+                        <div className="stars">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <img
+                                    key={star}
+                                    src={rating >= star ? "star1.png" : "star3.png"}
+                                    alt={`Tähtiarvosana ${star}`}
+                                    className="star"
+                                    onClick={() => setRating(star)}
+                                />
+                            ))}
+                        </div>
+    
+                        {/* Kommenttikenttä */}
+                        <textarea
+                            className="comment-box"
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            placeholder="Kirjoita kommenttisi tähän..."
+                        />
+    
+                        {/* Lähetä nappi */}
+                        <button onClick={submitReview} className="submit-button">
                             Lähetä arvostelu
                         </button>
                     </>
                 )}
             </div>
+            </div>
         </div>
     );
-}
+};    

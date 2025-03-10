@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import { Instagram, Linkedin, Github } from "lucide-react";
+import "../App.css";
+import "./Signing.css";
+
 
 export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
 
@@ -25,6 +31,7 @@ export default function Register() {
     if (response.ok) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("userId", data.userId);
+        localStorage.setItem("username", data.username);
         setUserId(data.userId);
         console.log(data.userId)
         navigate("/preferences");
@@ -34,44 +41,77 @@ export default function Register() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-xl font-semibold mb-4">Rekisteröidy</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col">
+    <div className="login-container">
+      <img className="logo" src="/Logo.png" alt="JYU RuokailuApp"></img>
+      <div className="login-box">
+        <div className="auth-links">
+          <a href="/">Kirjaudu sisään</a>
+          <a href="/register" className="active">Rekisteröidy</a>
+        </div>
+
+        <form className="username-container" onSubmit={handleSubmit}>
+          <p>Käyttäjänimi</p>
           <input
-            placeholder="Käyttäjänimi"
-            className="mb-2 p-2 border rounded"
+            type="text"
+            className="input-field"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
-          <input
-            type="password"
-            placeholder="Salasana"
-            className="mb-2 p-2 border rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Vahvista salasana"
-            className="mb-2 p-2 border rounded"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-          <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-            Rekisteröidy
-          </button>
+          
+          <div className="password-container">
+            <p>Salasana</p>
+            <input
+              type={showPassword ? "text" : "password"}
+              className="input-field"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              className="password-icon"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          <div className="confirmpassword-container">
+            <p>Varmista salasana</p>
+            <input
+              type={showPassword ? "text" : "password"}
+              className="input-field"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              className="password-icon"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          <button type="submit" className="login-button">Rekisteröidy</button>
         </form>
-        <p className="mt-4 text-center text-sm">
-          Onko sinulla jo tili?{" "}
-          <a href="/" className="text-blue-500 underline">
-            Kirjaudu sisään
-          </a>
-        </p>
+      </div>
+      <div className="footer">
+      <p>© Jesse Haimi Original Design</p>
+      <div className="social-links">
+        <a href="https://www.instagram.com/jessehaimi" target="_blank" rel="noopener noreferrer">
+          <Instagram size={32} />
+        </a>
+        <a href="https://www.linkedin.com/in/jesse-haimi-019429256/" target="_blank" rel="noopener noreferrer">
+          <Linkedin size={32} />
+        </a>
+        <a href="https://github.com/jkhaimi/JYU-ruokailuApp" target="_blank" rel="noopener noreferrer">
+          <Github size={32} />
+        </a>
       </div>
     </div>
+  </div>
   );
 }

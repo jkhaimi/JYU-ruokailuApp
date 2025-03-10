@@ -1,0 +1,128 @@
+.review-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.review-box {
+    padding: 20px;
+    text-align: center;
+}
+
+.review-inputbox {
+    border: 2px solid #4caf50;
+    border-radius: 25px;
+    padding: 1em;
+}
+
+.review-title {
+    font-size: large;
+    font-weight: bold;
+    color: #4caf50;
+    color: whitesmoke;
+    margin-bottom: 0;
+    margin-top: 0.5em;
+}
+
+.review-stars-title {
+    margin-top: 0.5em;
+    margin-bottom: 2em;
+}
+
+.review-stars-title li {
+    margin-top: 1em;
+    margin-bottom: -1.5em;
+    font-weight: normal;
+    font-size: medium;
+}
+
+/* Ravintolat ja ateriat -nappien tyyli */
+.restaurant-button {
+    width: 100%;
+    padding: 1em;
+    background: #4caf50;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    margin-top: 1.5em;
+}
+
+.meal-button {
+    width: 100%;
+    padding: 0.5em;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    margin-top: 1.5em;   
+}
+
+.restaurant-button:hover, 
+.meal-button:hover {
+    background-color: #388e3c;
+}
+
+.review-components {
+    font-size: medium;
+    padding-right: 1em;
+}
+
+.review-components li {
+    margin-top: 1em;
+}
+
+/* Tähtien tyylit */
+.stars {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+    background: #262626;
+    padding: 0.5em;
+    border-radius: 25px;
+}
+
+.star {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.star:hover {
+    transform: scale(1.1);
+}
+
+/* Kommenttikenttä */
+.comment-box {
+    width: 95%;
+    height: 5em;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    resize: none;
+    font-size: 1rem;
+}
+
+/* Lähetä nappi */
+.submit-button {
+    width: 100%;
+    padding: 1em;
+    background: #4caf50;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    margin-top: 1em;
+}
+
+.submit-button:hover {
+    background: #388e3c;
+}
