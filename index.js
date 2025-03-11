@@ -17,6 +17,13 @@ app.use(express.json());
         next();
     });
 
+    app.use(cors({
+        origin: ['https://jyu-ruokailu-app-kappa.vercel.app', 'http://localhost:3000'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        credentials: true,
+        allowedHeaders: ['Content-Type']
+      }));
+
 const RESTAURANTS = [
     { name: "Lozzi", costNumber: "1401", apiBaseUrl: "https://www.semma.fi/menuapi/feed/json" },
     { name: "Piato", costNumber: "1408", apiBaseUrl: "https://www.semma.fi/menuapi/feed/json" },
