@@ -10,6 +10,13 @@ const moment = require('moment');
 app.use(cors());
 app.use(express.json());
 
+    app.use((req, res, next) => {
+        if (req.headers['x-forwarded-proto'] !== 'https') {
+            return res.redirect('https://' + req.get('Host') + req.url);
+        }
+        next();
+    });
+
 const RESTAURANTS = [
     { name: "Lozzi", costNumber: "1401", apiBaseUrl: "https://www.semma.fi/menuapi/feed/json" },
     { name: "Piato", costNumber: "1408", apiBaseUrl: "https://www.semma.fi/menuapi/feed/json" },
