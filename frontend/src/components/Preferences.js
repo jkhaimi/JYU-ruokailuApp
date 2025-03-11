@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Notification from "./Notification";
+import Dropdown from "./Dropdown";
 import './Preferences.css';
 
 export default function Preferences() {
@@ -17,7 +18,8 @@ export default function Preferences() {
     }
       try {
         const response = await fetch(
-          `http://localhost:5001/api/user-preferences?userId=${userId}`
+          `http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/user-preferences?userId=${userId}`
+          // `http://localhost:5001/api/user-preferences?userId=${userId}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -65,7 +67,8 @@ export default function Preferences() {
     }
     
     try {
-      const response = await fetch("http://localhost:5001/api/user-preferences", {
+      const response = await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/user-preferences`, {
+      // const response = await fetch("http://localhost:5001/api/user-preferences", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, ...preferences }),
@@ -111,8 +114,11 @@ export default function Preferences() {
         onClose={() => setNotification({ message: "", type: "" })}
       />
       <div className="preferences-box">
-      <h2 className="preference-title">Hei, {username}</h2>
-      <h3 className="preference-title2">mitä ja missä syödään?</h3>
+        <div>
+          <h2 className="preference-title">Hei, {username}</h2>
+          <h3 className="preference-title2">mitä ja missä syödään?</h3>
+          <Dropdown />
+      </div>
         <div className="app-links">
         <a href="/dashboard">Ruokalista</a>                
         <a href="/preferences" className="active">Preferenssit</a>

@@ -9,7 +9,8 @@ export default function Dropdown() {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5001/api/logout", { method: "POST" });
+      await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/logout`, { method: "POST" });
+      // await fetch("http://localhost:5001/api/logout", { method: "POST" });
       localStorage.removeItem("userId");
       localStorage.removeItem("username");
       navigate("/");
@@ -30,7 +31,7 @@ export default function Dropdown() {
       {/* Koko näytön peittävä tumma overlay */}
       {isOpen && (
         <div className="dropdown-overlay" onClick={() => setIsOpen(false)}>
-            <img className="dropdown-logo" src="./logo.png"></img>
+            <img className="dropdown-logo" src="./Logo.png"></img>
           <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
             <button onClick={handleLogout} className="logout-button">
               Kirjaudu ulos

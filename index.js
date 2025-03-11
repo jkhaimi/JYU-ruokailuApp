@@ -415,12 +415,10 @@ const filteredMenus = formattedMenus.filter(restaurant => {
                 return false;
             }
             
-
-
-            // if (preferences.only_295 && !meal.price.split("/").some(c => c.toLowerCase().includes("2,95"))) {
-            //     console.log("Henkilö syö vain 2,95 ruokia", meal.price);
-            //     return false;
-            // }
+            if (preferences.only_295 && !meal.price.split("/").some(c => c.toLowerCase().includes("2,95"))) {
+                console.log("Henkilö syö vain 2,95 ruokia", meal.price);
+                return false;
+            }
 
             if (meal.components.length === 0) {
                 console.log("Tyhjä ruoka")

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Notification from "./Notification";
+import Dropdown from "./Dropdown";
 import './Review.css';
 
 export default function Review() {
@@ -22,7 +23,8 @@ export default function Review() {
 
         async function fetchMenu() {
             try {
-                const response = await fetch(`http://localhost:5001/api/todays-menu?userId=${userId}`);
+                const response = await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/todays-menu?userId=${userId}`);
+                // const response = await fetch(`http://localhost:5001/api/todays-menu?userId=${userId}`);
                 const data = await response.json();
                 if (response.ok) {
                     setMenu(Array.isArray(data) ? data : []);
@@ -43,7 +45,8 @@ export default function Review() {
             return;
         }
         try {
-            const response = await fetch("http://localhost:5001/api/reviews", {
+            const response = await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/reviews`, {
+            // const response = await fetch("http://localhost:5001/api/reviews", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -72,8 +75,11 @@ export default function Review() {
         onClose={() => setNotification({ message: "", type: "" })}
         />
             <div className="review-box">
-            <h2 className="dashboard-title">Hei, {username}</h2>
-            <h3 className="dashboard-title2">miltä maistui tänään?</h3>
+            <div>
+                <h2 className="dashboard-title">Hei, {username}</h2>
+                <h3 className="dashboard-title2">miltä maistui tänään?</h3>
+                <Dropdown />
+            </div>
                 <div className="app-links">
                 <a href="/dashboard">Ruokalista</a>                
                 <a href="/preferences">Preferenssit</a>

@@ -15,7 +15,8 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:5001/api/login", {
+    const response = await fetch("http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/login", {
+    // const response = await fetch("http://localhost:5001/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),

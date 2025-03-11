@@ -21,7 +21,8 @@ export default function Dashboard() {
     
         async function fetchMenu() {
             try {
-                const response = await fetch(`http://localhost:5001/api/todays-menu?userId=${userId}`);
+                const response = await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/todays-menu?userId=${userId}`);
+                // const response = await fetch(`http://localhost:5001/api/todays-menu?userId=${userId}`);
                 const data = await response.json();
                 if (response.ok) {
                     console.log(userId)
@@ -44,7 +45,8 @@ export default function Dashboard() {
             for (const restaurant of menu) {
                 for (const meal of restaurant.meals) {
                     try {
-                        const response = await fetch(`http://localhost:5001/api/reviews/${meal.id}`);
+                        const response = await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/reviews/${meal.id}`);
+                        // const response = await fetch(`http://localhost:5001/api/reviews/${meal.id}`);
                         const data = await response.json();
                         if (response.ok) {
                             reviewsData[meal.id] = data;
