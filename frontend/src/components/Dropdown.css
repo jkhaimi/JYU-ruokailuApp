@@ -1,10 +1,10 @@
 /* Hampurilaisikoni */
 .menu-icon {
     position: absolute;
-    top: 50px;
-    right: 25px;
-    width: 40px;
-    height: 30px;
+    top: 3em;
+    right: 2em;
+    width: 3em;
+    height: 2.2em;
     background: none;
     border: none;
     display: flex;
@@ -50,7 +50,7 @@
 
   .dropdown-logo {
     position: absolute;
-    top: 6em;
+    top: 4em;
     width: 80%;
   }
   
@@ -82,7 +82,7 @@
 
   .email-button {
     margin-top: 2em;
-    margin-bottom: 6em;
+    margin-bottom: 2em;
   }
   
   .logout-button:hover, .email-button:hover {
