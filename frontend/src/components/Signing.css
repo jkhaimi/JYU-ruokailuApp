@@ -9,6 +9,7 @@
 .logo {
     width: 20em;
     margin-top: 1em;
+    margin-bottom: -1em;
 }
 
 /* Lomakekortti */
@@ -78,8 +79,8 @@
 
 .password-icon {
     position: relative;
-    left: 22em;
-    top: -2.6em;
+    left: 85%;
+    top: -2.7em;
     transform: translateY(-50%);
     cursor: pointer;
     color: #8bc34a;
@@ -98,6 +99,7 @@
     border-radius: 50px;
     cursor: pointer;
     transition: background 0.3s ease-in-out;
+    margin-top: 1em;
 }
 
 .login-button:hover {
