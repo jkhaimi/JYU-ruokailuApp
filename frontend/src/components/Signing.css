@@ -80,7 +80,7 @@
 .password-icon {
     position: relative;
     left: 85%;
-    top: -2.7em;
+    top: -4vh;
     transform: translateY(-50%);
     cursor: pointer;
     color: #8bc34a;
