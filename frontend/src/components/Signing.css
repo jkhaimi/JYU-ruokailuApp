@@ -119,6 +119,7 @@
     display: flex;
     justify-content: center;
     gap: 4em;
+    margin-bottom: 3em;
   }
   
   .social-links a {
