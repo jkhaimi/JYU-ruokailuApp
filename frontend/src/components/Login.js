@@ -29,10 +29,11 @@ export default function Login() {
     if (response.ok) {
       localStorage.setItem("userId", data.userId);
       localStorage.setItem("username", data.username);
-      navigate("/dashboard", { state: { message: "Kirjautuminen onnistui!", type: "success" } });
+      navigate("/dashboard", { state: { message: "Tervetuloa " + data.username, type: "success" } });
       console.log(data.userId)
     } else {
-      setNotification({ message: "Virhe kirjautuessa sisään: ", type: "error" });
+      alert(data.message);
+      setNotification({ message: "Virhe kirjautuessa sisään: " + data.message, type: "error" });
     }
   };
 
