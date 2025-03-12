@@ -32,7 +32,6 @@ export default function Login() {
       navigate("/dashboard", { state: { message: "Tervetuloa " + data.username, type: "success" } });
       console.log(data.userId)
     } else {
-      alert(data.message);
       setNotification({ message: "Virhe kirjautuessa sisään: " + data.message, type: "error" });
     }
   };

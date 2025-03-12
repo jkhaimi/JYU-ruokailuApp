@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { Instagram, Linkedin, Github } from "lucide-react";
+import Notification from "./Notification";
 import "../App.css";
 import "./Signing.css";
 
@@ -12,6 +13,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [notification, setNotification] = useState({ message: "", type: "" });
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -36,14 +38,19 @@ export default function Register() {
         localStorage.setItem("username", data.username);
         setUserId(data.userId);
         console.log(data.userId)
-        navigate("/preferences");
+        navigate("/preferences", { state: { message: "Tervetuloa " + data.username, type: "success" } });
     } else {
-      alert(data.message);
+      setNotification({ message: "Virhe rekisteröinnissä: " + data.message, type: "error" });
     }
   };
 
   return (
     <div className="login-container">
+      <Notification 
+          message={notification.message} 
+          type={notification.type} 
+          onClose={() => setNotification({ message: "", type: "" })} 
+      />
       <img className="logo" src="/Logo.png" alt="JYU RuokailuApp"></img>
       <div className="login-box">
         <div className="auth-links">

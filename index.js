@@ -168,7 +168,7 @@ app.post('/api/register', async (req, res) => {
 
     } catch (error) {
         console.error("Error registering user:", error);
-        res.status(500).send({ message: "Error registering user" });
+        res.status(500).send({ message: "Ongelma rekisteröinnissä..." });
     }
 });
 
@@ -178,7 +178,7 @@ app.post('/api/login', async (req, res) => {
     try {
         const user = await client.query('SELECT * FROM users WHERE username = $1', [username]);
         if (user.rows.length === 0) {
-            return res.status(400).send({ message: "Invalid username" });
+            return res.status(400).send({ message: "Väärä käyttäjänimi" });
         }
 
         console.log("User found:", user.rows[0]);
@@ -186,7 +186,7 @@ app.post('/api/login', async (req, res) => {
         const validPassword = await bcrypt.compare(password, user.rows[0].password_hash);
         if (!validPassword) {
             console.log("Invalid password inserted")
-            return res.status(400).send({ message: "Invalid password" });
+            return res.status(400).send({ message: "Väärä salasana" });
         }
 
         const token = jwt.sign({ userId: user.rows[0].id }, SECRET_KEY, { expiresIn: '1h' });
@@ -195,12 +195,12 @@ app.post('/api/login', async (req, res) => {
 
     } catch (error) {
         console.error("Login error:", error);
-        res.status(500).send({ message: "Error logging in" });
+        res.status(500).send({ message: "Sisäänkirjautumisessa ongelmia" });
     }
 });
 
 app.post('/api/logout', (req, res) => {
-    res.status(200).send({ message: "Logged out successfully" });
+    res.status(200).send({ message: "Uloskirjautuminen onnistui!" });
 });
 
 //// Käyttäjien preferenssien päivitys
