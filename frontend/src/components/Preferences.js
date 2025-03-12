@@ -18,7 +18,8 @@ export default function Preferences() {
     }
       try {
         const response = await fetch(
-          `http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/user-preferences?userId=${userId}`
+          `/api/user-preferences?userId=${userId}`
+          // `http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/user-preferences?userId=${userId}`
           // `http://localhost:5001/api/user-preferences?userId=${userId}`
         );
         if (response.ok) {
@@ -67,7 +68,8 @@ export default function Preferences() {
     }
     
     try {
-      const response = await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/user-preferences`, {
+      const response = await fetch(`/api/user-preferences`, {
+      // const response = await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/user-preferences`, {
       // const response = await fetch("http://localhost:5001/api/user-preferences", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
