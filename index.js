@@ -15,21 +15,15 @@ const FRONTEND_URL = process.env.CORS_ORIGIN;
 const PORT = process.env.PORT || 5001;
 
 const corsOptions = {
-    origin: function (origin, callback) {
-      if (!origin || origin === process.env.CORS_ORIGIN || origin === "http://localhost:3000") {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: process.env.CORS_ORIGIN || "https://jyu-ruokailu-app-kappa.vercel.app",
     methods: ['GET','POST','PUT','DELETE','OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type','Authorization']
-  };
-  
-  app.use(cors(corsOptions));
+};
 
-  app.options('*', cors(corsOptions)); // enable preflight for all routes
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // enable preflight for all routes
+
 
   
 
