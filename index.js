@@ -14,14 +14,24 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const FRONTEND_URL = process.env.CORS_ORIGIN;
 const PORT = process.env.PORT || 5001;
 
-app.use(cors({
-    origin: [FRONTEND_URL, "http://localhost:3000"],
-    methods: ['GET','POST','PUT','DELETE'],
+const corsOptions = {
+    origin: function (origin, callback) {
+      if (!origin || origin === process.env.CORS_ORIGIN || origin === "http://localhost:3000") {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ['GET','POST','PUT','DELETE','OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type','Authorization']
-}));
+  };
+  
+  app.use(cors(corsOptions));
 
-app.use(express.json());
+  app.options('*', cors(corsOptions)); // enable preflight for all routes
+
+  
 
     // app.use((req, res, next) => {
     //     if (req.headers['x-forwarded-proto'] !== 'https') {
