@@ -14,6 +14,9 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const FRONTEND_URL = process.env.CORS_ORIGIN;
 const PORT = process.env.PORT || 5001;
 
+// Parse JSON first
+app.use(express.json());
+
 const corsOptions = {
     origin: process.env.CORS_ORIGIN || "https://jyu-ruokailu-app-kappa.vercel.app",
     methods: ['GET','POST','PUT','DELETE','OPTIONS'],
