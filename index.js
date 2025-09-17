@@ -4,10 +4,23 @@ const axios = require('axios');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const client = require('./db');
-const app = express();
-const SECRET_KEY = "your_secret_key"; 
 const moment = require('moment');
-app.use(cors());
+
+require('dotenv').config();
+
+const app = express();
+
+const SECRET_KEY = process.env.SECRET_KEY;
+const FRONTEND_URL = process.env.CORS_ORIGIN;
+const PORT = process.env.PORT || 5001;
+
+app.use(cors({
+    origin: [FRONTEND_URL, "http://localhost:3000"],
+    methods: ['GET','POST','PUT','DELETE'],
+    credentials: true,
+    allowedHeaders: ['Content-Type','Authorization']
+}));
+
 app.use(express.json());
 
     // app.use((req, res, next) => {
@@ -396,8 +409,8 @@ const filteredMenus = formattedMenus.filter(restaurant => {
             }
 
             const dietFilters = [
-                { key: "eats_meat", blockedWords: ["broileri", "nauta", "kana", "liha", "chicken", "meetvursti", "naudanlihaa", "makkara", "kinkku", "sianliha", "pekoni", "porsas", "kebab"] },
-                { key: "eats_pork", blockedWords: ["makkara", "kinkku", "sianliha", "pekoni", "porsas", "wieninleike"] },
+                { key: "eats_meat", blockedWords: ["broileri", "nauta", "kana", "liha", "chicken", "meetvursti", "naudanlihaa", "makkara", "kinkku", "sianliha", "pekoni", "porsas", "kebab", "ruotsalaista pyttipannua"] },
+                { key: "eats_pork", blockedWords: ["makkara", "kinkku", "sianliha", "pekoni", "porsas", "wieninleike", "ruotsalaista pyttipannua"] },
                 { key: "eats_fish", blockedWords: ["kala", "seiti", "lohi", "lohta", "silakka", "kampela"] },
                 { key: "eats_soups", blockedWords: ["keitto"] }
             ];
@@ -454,6 +467,6 @@ res.json(nonEmptyMenus);
 
 
 
-app.listen(5001, () => {
-    console.log('Server is running on port 5001');
+app.listen(PORT, () => {
+    console.log(`🚀 Server is running on port ${PORT}`);
 });

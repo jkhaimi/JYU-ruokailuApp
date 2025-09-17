@@ -1,20 +1,15 @@
 const { Client } = require('pg');
-require('dotenv').config(); 
+require('dotenv').config();
 
 const client = new Client({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT, 
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  ssl: { rejectUnauthorized: false }
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }  // Required for Supabase pooler
 });
 
 client.connect()
-    .then(() => console.log("Connected to database"))
-    .catch(err => {
-        console.error("Database connection error:", err.message);
-        console.error("Error details:", err);
-    });
+  .then(() => console.log("✅ Connected to database via Supabase pooler"))
+  .catch(err => {
+    console.error("❌ Database connection error:", err.message);
+  });
 
 module.exports = client;
