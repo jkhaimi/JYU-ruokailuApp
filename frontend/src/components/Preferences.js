@@ -17,8 +17,8 @@ export default function Preferences() {
         navigate("/");
     }
       try {
-        const response = await fetch(
-          `/api/user-preferences?userId=${userId}`
+        // const response = await fetch(`/api/user-preferences?userId=${userId}`
+          const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user-preferences?userId=${userId}`
           // `http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/user-preferences?userId=${userId}`
           // `http://localhost:5001/api/user-preferences?userId=${userId}`
         );
@@ -68,7 +68,8 @@ export default function Preferences() {
     }
     
     try {
-      const response = await fetch(`/api/user-preferences`, {
+      // const response = await fetch(`/api/user-preferences`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user-preferences`, {
       // const response = await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/user-preferences`, {
       // const response = await fetch("http://localhost:5001/api/user-preferences", {
         method: "PUT",

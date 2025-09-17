@@ -23,7 +23,8 @@ export default function Review() {
 
         async function fetchMenu() {
             try {
-                const response = await fetch(`/api/todays-menu?userId=${userId}`);
+                // const response = await fetch(`/api/todays-menu?userId=${userId}`);
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/todays-menu?userId=${userId}`);
                 // const response = await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/todays-menu?userId=${userId}`);
                 // const response = await fetch(`http://localhost:5001/api/todays-menu?userId=${userId}`);
                 const data = await response.json();
@@ -46,7 +47,8 @@ export default function Review() {
             return;
         }
         try {
-            const response = await fetch(`/api/reviews`, {
+            // const response = await fetch(`/api/reviews`, {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/reviews`, {
             // const response = await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/reviews`, {
             // const response = await fetch("http://localhost:5001/api/reviews", {
                 method: "POST",

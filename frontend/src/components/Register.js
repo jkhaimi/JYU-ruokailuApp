@@ -23,7 +23,8 @@ export default function Register() {
       return;
     }
 
-    const response = await fetch("/api/register", {
+    // const response = await fetch("/api/register", {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/register`, {
     // const response = await fetch("http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/register", {
       // const response = await fetch("http://localhost:5001/api/register", { 
       method: "POST",

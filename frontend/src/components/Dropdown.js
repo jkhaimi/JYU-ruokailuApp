@@ -9,7 +9,7 @@ export default function Dropdown() {
 
   const handleLogout = async () => {
     try {
-      await fetch(`/api/logout`, { method: "POST" });
+      await fetch(`${process.env.REACT_APP_API_BASE_URL}/logout`, { method: "POST" });
       // await fetch(`http://ec2-51-20-10-127.eu-north-1.compute.amazonaws.com:5001/api/logout`, { method: "POST" });
       // await fetch("http://localhost:5001/api/logout", { method: "POST" });
       localStorage.removeItem("userId");
